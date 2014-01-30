@@ -3,7 +3,7 @@ from software import Software
 
 class phpMyAdmin(Software):
     def __init__(self):
-        pass
+        self.github_repo = "phpmyadmin/phpmyadmin"
 
     def check(self, directory):
         return False
@@ -18,4 +18,4 @@ class phpMyAdmin(Software):
         return None
 
     def getVersions(self):
-        return None
+        return {}

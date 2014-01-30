@@ -3,7 +3,7 @@ from software import Software
 
 class DokuWiki(Software):
     def __init__(self):
-        pass
+        self.github_repo = "splitbrain/dokuwiki"
 
     def check(self, directory):
         return False
@@ -18,4 +18,4 @@ class DokuWiki(Software):
         return None
 
     def getVersions(self):
-        return None
+        return {}

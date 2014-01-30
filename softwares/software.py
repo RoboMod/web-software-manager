@@ -1,4 +1,7 @@
 class Software(object):
+
+    github_repo = None
+
     def __init__(self):
         pass
 
@@ -15,7 +18,7 @@ class Software(object):
     #  return None
 
     def check(self, directory):
-        return None
+        return False
 
     def getConfig(self, directory):
         return None
@@ -27,7 +30,7 @@ class Software(object):
         return None
 
     def getVersions(self):
-        return None
+        return {}
 
     #def getStableVersion(self):
     #  return None

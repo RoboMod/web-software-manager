@@ -1,26 +1,20 @@
 #!/usr/bin/python
+from scipy.stats.distributions import maxwell_gen
 
 from softwares import *
+from helpers.others import chk_neg
 import sys
 import argparse
 import os
 
 
 # some internal helper functions
-def check_dir(directory, softwares, rec=False):
-    something = False
+def check_dir(directory, softwares):
+    result = {os.path.abspath(directory): []}
     for s in softwares:
         if s().check(directory):
-            print os.path.abspath(directory) + ' - ' + s.__name__
-            something = True
-    if not something:
-        print os.path.abspath(directory) + ' - no software detected'
-
-    # run recursively throw directory if wanted
-    if rec:
-        for root, dirs, files in os.walk(directory):
-            for name in dirs:
-                check_dir(os.path.join(root, name), softwares, rec)
+            result[os.path.abspath(directory)].append(s.__name__)
+    return result
 
 # say hello
 print "Web Software Manager"
@@ -32,8 +26,10 @@ parser.add_argument("-s", "--software", dest="software", action="store_true", de
                     help="list all known software (not installations!)")
 parser.add_argument("-i", "--installations", dest="installations", metavar="DIR",
                     help="list detected software in given DIR")
-parser.add_argument("-r", "--recursive", dest="recursive", action="store_true", default=False,
-                    help="run recursively throw the directory (only usefully with -i/--installations)")
+parser.add_argument("-r", "--recursive", dest="recursive", nargs='?', type=chk_neg, const=-1, metavar="N",
+                    help="run recursively till depth [N] (if given) throw the directory (only usefully with -i/--installations)")
+parser.add_argument("-v", "--versions", dest="versions", nargs='?', const="all", metavar="SOFTWARE",
+                    help="shows versions of one(SOFTWARE) or all known software")
 
 # parse arguments
 args = parser.parse_args()
@@ -46,18 +42,71 @@ if len(sys.argv) == 1:
 # list known software
 if args.software:
     print "known software:"
+
     softwares = vars()['Software'].__subclasses__()
     for s in sorted(softwares, key=lambda software: software.__name__):
-        print(' - ' + s.__name__)
+        print ' - ' + s.__name__
+
     print ""
 
 # list installations
-if args.installations is not None:
+if args.installations:
     # check if director exists
     if not os.path.isdir(args.installations):
         print "existing directory needed!"
         exit(-1)
 
+    installations = {}
+
     # ask each software if it detects an installations
-    check_dir(args.installations, vars()['Software'].__subclasses__(), args.recursive)
-      
+    installations.update(check_dir(args.installations, vars()['Software'].__subclasses__()))
+
+    # run recursively throw directory if wanted
+    if args.recursive:
+        max_depth = args.recursive
+        base_depth = os.path.abspath(args.installations).count(os.sep)
+        for root, dirs, files in os.walk(args.installations):
+            for name in dirs:
+                if (max_depth > -1) and (os.path.abspath(root).count(os.sep) - base_depth >= max_depth):
+                    break
+                installations.update(check_dir(os.path.join(root, name), vars()['Software'].__subclasses__()))
+
+    # display installations
+    print "found installations at:"
+    for i in sorted(installations.keys()):
+        output = i + "\t- "
+
+        if len(installations[i]) == 0:
+            output += "no software detected"
+        else:
+            if len(installations[i]) > 1:
+                output += "attention! more than one software could match, found: "
+            output += ", ".join(sorted(installations[i]))
+
+        print output
+    print ""
+
+# show versions
+if args.versions:
+    print "known software versions for:"
+
+    softwares = vars()['Software'].__subclasses__()
+    not_found = True
+    for s in sorted(softwares, key=lambda software: software.__name__):
+        # if not all is given, only run for the wanted software
+        if args.versions is not "all":
+            if s.__name__ != args.versions:
+                continue
+
+        not_found = False
+        print ' - ' + s.__name__
+        versions = s().getVersions()
+        if len(versions.keys()) > 0:
+            print '\n\t- '.join(versions.keys())
+        else:
+            print "\t- no versions found"
+
+    if not_found:
+        print "software unknown!"
+
+    print ""

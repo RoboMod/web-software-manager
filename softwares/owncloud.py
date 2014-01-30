@@ -1,13 +1,13 @@
 from helpers.files import getInfosFromFile
+from helpers.web import *
 from software import Software
-import helpers
 import os
 import re
 
 
 class OwnCloud(Software):
     def __init__(self):
-        pass
+        self.github_repo = "owncloud/core"
 
     def check(self, directory):
         if not os.path.isfile(os.path.join(directory, "index.php")):
@@ -48,5 +48,11 @@ class OwnCloud(Software):
 
 
     def getVersions(self):
-        helpers.getVersionsFromGithub("owncloud/core")
-        return None
+        versions = getVersionsFromGithub(self.github_repo)
+
+        #regexp = re.compile('v(.*)', re.DOTALL | re.IGNORECASE | re.MULTILINE)
+        for v in versions.keys():
+            name = v[1:]
+            versions[name] = versions.pop(v)
+
+        return versions

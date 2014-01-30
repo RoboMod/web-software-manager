@@ -3,7 +3,7 @@ from software import Software
 
 class Adminer(Software):
     def __init__(self):
-        pass
+        self.github_repo = "vrana/adminer"
 
     def check(self, directory):
         return False
@@ -18,4 +18,4 @@ class Adminer(Software):
         return None
 
     def getVersions(self):
-        return None
+        return {}

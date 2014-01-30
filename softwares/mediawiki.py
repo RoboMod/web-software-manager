@@ -3,7 +3,7 @@ from software import Software
 
 class MediaWiki(Software):
     def __init__(self):
-        pass
+        self.github_repo = "wikimedia/mediawiki-core"
 
     def check(self, directory):
         return False
@@ -18,4 +18,4 @@ class MediaWiki(Software):
         return None
 
     def getVersions(self):
-        return None
+        return {}
