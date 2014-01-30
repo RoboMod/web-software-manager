@@ -1,3 +1,6 @@
 from software import Software
 from owncloud import OwnCloud
-#import Software
+from mediawiki import MediaWiki
+from phpmyadmin import phpMyAdmin
+from dokuwiki import DokuWiki
+from adminer import Adminer

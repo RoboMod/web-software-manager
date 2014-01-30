@@ -1,33 +1,33 @@
-class Software:
-  def __init__(self):
-    pass
-    
-  #def getVersion(dir):
-  #  return None
+class Software(object):
+    def __init__(self):
+        pass
 
-  #def getDBName(dir):
-  #  return None
-  
-  #def getDBUser(dir):
-  #  return None
-  
-  #def getDBPassword(dir):
-  #  return None
-  
-  def check(self, dir):
-    return None
-  
-  def getConfig(self, dir):
-    return None
-  
-  def update(self, dir):
-    return None
-  
-  def download(self, version):
-    return None
-  
-  def getVersions(self):
-    return None
-  
-  #def getStableVersion():
-  #  return None
+    #def getVersion(self, directory):
+    #  return None
+
+    #def getDBName(self, directory):
+    #  return None
+
+    #def getDBUser(self, directory):
+    #  return None
+
+    #def getDBPassword(self, directory):
+    #  return None
+
+    def check(self, directory):
+        return None
+
+    def getConfig(self, directory):
+        return None
+
+    def update(self, directory):
+        return None
+
+    def download(self, version):
+        return None
+
+    def getVersions(self):
+        return None
+
+    #def getStableVersion(self):
+    #  return None
