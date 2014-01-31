@@ -23,12 +23,15 @@ def getJSONFromGithub(url):
     try:
         result = urllib2.urlopen(request)
     except urllib2.HTTPError as h:
-        print "http error"
-        print h.code
-        return None
+        # if http code 304 occurs: no new data is available
+        if h.code == 304:
+            return requests[url]["json"]
+        else:
+            print "HTTP Error " + str(h.code)
+            return {}
     except urllib2.URLError as u:
-        print "url error"
-        return None
+        print "URL Error (not contact)"
+        return {}
     else:
         # if http code 304 occurs: no new data is available
         if result.code == 304:
@@ -64,7 +67,7 @@ def getVersionsFromGithub(repo):
             versions.update(version)
 
     #return sorted(versions, key=lambda v: v["date"])
-    return sorted(versions)
+    return versions
 
 
 def getArchiveFromGithub(software, repo, version):

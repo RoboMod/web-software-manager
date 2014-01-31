@@ -1,8 +1,9 @@
 from helpers.files import getInfosFromFile
 from helpers.web import *
+from helpers.others import *
 from software import Software
 import os
-import re
+#import re
 
 
 class OwnCloud(Software):
@@ -39,6 +40,7 @@ class OwnCloud(Software):
                 ["dbtype", "dbname", "dbuser", "dbpassword", "dbhost", "appstoreurl"],
                 '.*\s*=>\s*["\']?([^"\']*)["\']?,')
 
+
     def update(self, directory):
         return None
 
@@ -47,12 +49,6 @@ class OwnCloud(Software):
         return None
 
 
-    def getVersions(self):
+    def getVersions(self, only_stable=True):
         versions = getVersionsFromGithub(self.github_repo)
-
-        #regexp = re.compile('v(.*)', re.DOTALL | re.IGNORECASE | re.MULTILINE)
-        for v in versions.keys():
-            name = v[1:]
-            versions[name] = versions.pop(v)
-
-        return versions
+        return filter_versions(versions, 'v([\d*\.]*\d).*', 'v[\d*\.]*\d(.*)', only_stable)

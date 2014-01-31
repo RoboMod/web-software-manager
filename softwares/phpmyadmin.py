@@ -1,4 +1,6 @@
 from software import Software
+from helpers.others import *
+from helpers.web import *
 
 
 class phpMyAdmin(Software):
@@ -17,5 +19,6 @@ class phpMyAdmin(Software):
     def download(self, version):
         return None
 
-    def getVersions(self):
-        return {}
+    def getVersions(self, only_stable=True):
+        versions = getVersionsFromGithub(self.github_repo)
+        return filter_versions(versions, 'RELEASE_([\d*_]*\d).*', 'RELEASE_[\d*_]*\d(.*)' , only_stable)

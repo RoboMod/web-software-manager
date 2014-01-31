@@ -29,7 +29,7 @@ class Software(object):
     def download(self, version):
         return None
 
-    def getVersions(self):
+    def getVersions(self, only_stable=True):
         return {}
 
     #def getStableVersion(self):

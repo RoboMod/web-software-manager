@@ -2,10 +2,11 @@
 from scipy.stats.distributions import maxwell_gen
 
 from softwares import *
-from helpers.others import chk_neg
+from helpers.others import *
 import sys
 import argparse
 import os
+import operator
 
 
 # some internal helper functions
@@ -29,7 +30,11 @@ parser.add_argument("-i", "--installations", dest="installations", metavar="DIR"
 parser.add_argument("-r", "--recursive", dest="recursive", nargs='?', type=chk_neg, const=-1, metavar="N",
                     help="run recursively till depth [N] (if given) throw the directory (only usefully with -i/--installations)")
 parser.add_argument("-v", "--versions", dest="versions", nargs='?', const="all", metavar="SOFTWARE",
-                    help="shows versions of one(SOFTWARE) or all known software")
+                    help="show (10 newest) versions of one(SOFTWARE) or all known software")
+parser.add_argument("-u", "--unstable", dest="unstable", action="store_true", default=False,
+                    help="show unstable versions, too (only usefully with -v/--versions)")
+parser.add_argument("-a", "--all", dest="all", action="store_true", default=False,
+                    help="show all (stable/unstable) versions")
 
 # parse arguments
 args = parser.parse_args()
@@ -95,16 +100,20 @@ if args.versions:
     for s in sorted(softwares, key=lambda software: software.__name__):
         # if not all is given, only run for the wanted software
         if args.versions is not "all":
-            if s.__name__ != args.versions:
+            if s.__name__.lower() != args.versions.lower():
                 continue
 
         not_found = False
         print ' - ' + s.__name__
-        versions = s().getVersions()
+        versions = s().getVersions(not args.unstable)
         if len(versions.keys()) > 0:
-            print '\n\t- '.join(versions.keys())
+            sorted_versions = sort_versions(versions.keys())
+            if args.all:
+                print '   ' + ', '.join(sorted_versions)
+            else:
+                print '   ' + ', '.join(sorted_versions[:10]) + ('...' if len(sorted_versions) > 10 else "")
         else:
-            print "\t- no versions found"
+            print "   no versions found!"
 
     if not_found:
         print "software unknown!"
