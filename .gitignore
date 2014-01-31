@@ -38,3 +38,7 @@ tests.py
 .idea
 
 .directory
+
+# Cache stuff
+cache/*
+!cache/web.cache

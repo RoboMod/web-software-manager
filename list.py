@@ -1,12 +1,10 @@
 #!/usr/bin/python
-from scipy.stats.distributions import maxwell_gen
 
 from softwares import *
-from helpers.others import *
+import helpers
 import sys
 import argparse
 import os
-import operator
 
 
 # some internal helper functions
@@ -107,7 +105,7 @@ if args.versions:
         print ' - ' + s.__name__
         versions = s().getVersions(not args.unstable)
         if len(versions.keys()) > 0:
-            sorted_versions = sort_versions(versions.keys())
+            sorted_versions = helpers.sort_versions(versions.keys())
             if args.all:
                 print '   ' + ', '.join(sorted_versions)
             else:

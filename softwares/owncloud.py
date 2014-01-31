@@ -1,9 +1,6 @@
-from helpers.files import getInfosFromFile
-from helpers.web import *
-from helpers.others import *
 from software import Software
+import helpers
 import os
-#import re
 
 
 class OwnCloud(Software):
@@ -36,7 +33,7 @@ class OwnCloud(Software):
 
 
     def getConfig(self, directory):
-        return getInfosFromFile(os.path.join(directory, "config/config.php"),
+        return helpers.getInfosFromFile(os.path.join(directory, "config/config.php"),
                 ["dbtype", "dbname", "dbuser", "dbpassword", "dbhost", "appstoreurl"],
                 '.*\s*=>\s*["\']?([^"\']*)["\']?,')
 
@@ -46,9 +43,20 @@ class OwnCloud(Software):
 
 
     def download(self, version):
-        return None
+        versions = self.getVersions(False)
+
+        if versions:
+            if versions.has_key(version):
+                return helpers.getArchiveFromGithub(versions[version]['url'], self.__class__.__name__, version)
+            else:
+                print "unknown version (" + version + ")!"
+        else:
+            print "no versions found!"
+
+        return False
+
 
 
     def getVersions(self, only_stable=True):
-        versions = getVersionsFromGithub(self.github_repo)
-        return filter_versions(versions, 'v([\d*\.]*\d).*', 'v[\d*\.]*\d(.*)', only_stable)
+        versions = helpers.getVersionsFromGithub(self.github_repo)
+        return helpers.filter_versions(versions, 'v([\d*\.]*\d).*', 'v[\d*\.]*\d(.*)', only_stable)

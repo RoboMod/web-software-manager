@@ -70,22 +70,26 @@ def getVersionsFromGithub(repo):
     return versions
 
 
-def getArchiveFromGithub(software, repo, version):
+def getArchiveFromGithub(url, name, version):
     # create request
-    url = "https://github.com/" + repo + "/archive/" + version + ".tar.gz"
+    #url = "https://github.com/" + repo + "/archive/" + version + ".tar.gz"
     request = urllib2.Request(url) #, None, {'Accept': 'application/vnd.github.v3+json'})
 
     # run request
     try:
         result = urllib2.urlopen(request)
     except urllib2.HTTPError as h:
-        print "http error"
-        print h.code
-        return None
-    except urrlib2.URLError as u:
-        print "url error"
-        return None
+        print "HTTP Error " + str(h.code)
+        return False
+    except urllib2.URLError as u:
+        print "URL Error (not contact)"
+        return False
     else:
-        output = open("cache" + software + url.split('/')[-1], 'w')
+        #create dir, if it doesn't exist yet
+        if not os.path.isdir("cache/" + name + "/"):
+            os.mkdir("cache/" + name + "/")
+
+        output = open("cache/" + name + "/" + version + ".tar.gz", 'w')
         output.write(result.read())
         output.close()
+        return True

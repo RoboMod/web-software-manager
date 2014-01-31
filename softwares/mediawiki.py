@@ -1,16 +1,36 @@
 from software import Software
-from helpers.others import *
-from helpers.web import *
+import helpers
+import os
 
 class MediaWiki(Software):
     def __init__(self):
         self.github_repo = "wikimedia/mediawiki-core"
 
     def check(self, directory):
-        return False
+        if not os.path.isfile(os.path.join(directory, "index.php")):
+            return False
+
+        if not os.path.isfile(os.path.join(directory, "load.php")):
+            return False
+
+        if not os.path.isfile(os.path.join(directory, "api.php")):
+            return False
+
+        if not os.path.isfile(os.path.join(directory, "img_auth.php")):
+            return False
+
+        if not os.path.isfile(os.path.join(directory, "LocalSettings.php")):
+            return False
+
+        if None in self.getConfig(directory).values():
+            return False
+
+        return True
 
     def getConfig(self, directory):
-        return None
+        return helpers.getInfosFromFile(os.path.join(directory, "LocalSettings.php"),
+                ["dbtype", "dbname", "dbuser", "dbpassword", "dbserver"],
+                '.*\s*=\s*["\']?([^"\']*)["\']?,')
 
     def update(self, directory):
         return None
@@ -19,5 +39,5 @@ class MediaWiki(Software):
         return None
 
     def getVersions(self, only_stable=True):
-        versions = getVersionsFromGithub(self.github_repo)
-        return filter_versions(versions, '[^\d]*([\d*\.]*\d).*', '[^\d]*[\d*\.]*\d(.*)', only_stable)
+        versions = helpers.getVersionsFromGithub(self.github_repo)
+        return helpers.filter_versions(versions, '[^\d]*([\d*\.]*\d).*', '[^\d]*[\d*\.]*\d(.*)', only_stable)

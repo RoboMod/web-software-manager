@@ -1,6 +1,6 @@
 from software import Software
-from helpers.others import *
-from helpers.web import *
+import helpers
+import os
 
 
 class Adminer(Software):
@@ -20,5 +20,5 @@ class Adminer(Software):
         return None
 
     def getVersions(self, only_stable=True):
-        versions = getVersionsFromGithub(self.github_repo)
-        return filter_versions(versions, 'v([\d*\.]*\d).*', 'v[\d*\.]*\d(.*)', only_stable)
+        versions = helpers.getVersionsFromGithub(self.github_repo)
+        return helpers.filter_versions(versions, 'v([\d*\.]*\d).*', 'v[\d*\.]*\d(.*)', only_stable)
